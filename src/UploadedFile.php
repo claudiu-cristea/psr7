@@ -130,7 +130,7 @@ final class UploadedFile implements UploadedFileInterface
     }
 
     /**
-     * @return bool Return true if there is no upload error.
+     * @return bool return true if there is no upload error
      */
     private function isOk(): bool
     {
@@ -159,7 +159,7 @@ final class UploadedFile implements UploadedFileInterface
             return $this->stream;
         }
 
-        $resource = fopen($this->file, 'r');
+        $resource = \fopen($this->file, 'r');
 
         return Stream::create($resource);
     }
@@ -173,18 +173,18 @@ final class UploadedFile implements UploadedFileInterface
         }
 
         if (null !== $this->file) {
-            $this->moved = 'cli' === php_sapi_name() ? rename($this->file, $targetPath) : move_uploaded_file($this->file, $targetPath);
+            $this->moved = 'cli' === \PHP_SAPI ? \rename($this->file, $targetPath) : \move_uploaded_file($this->file, $targetPath);
         } else {
             $stream = $this->getStream();
             if ($stream->isSeekable()) {
                 $stream->rewind();
             }
-            $this->copyToStream($stream, Stream::create(fopen($targetPath, 'w')));
+            $this->copyToStream($stream, Stream::create(\fopen($targetPath, 'w')));
             $this->moved = true;
         }
 
         if (false === $this->moved) {
-            throw new \RuntimeException(sprintf('Uploaded file could not be moved to %s', $targetPath));
+            throw new \RuntimeException(\sprintf('Uploaded file could not be moved to %s', $targetPath));
         }
     }
 
@@ -223,7 +223,7 @@ final class UploadedFile implements UploadedFileInterface
      */
     private function copyToStream(StreamInterface $source, StreamInterface $dest, $maxLen = -1)
     {
-        if ($maxLen === -1) {
+        if (-1 === $maxLen) {
             while (!$source->eof()) {
                 if (!$dest->write($source->read(1048576))) {
                     break;
